@@ -19,24 +19,10 @@ class BookController extends Controller
      */
     public function index()
     {
-        $categoryModel = app(Category::class);
-
-        return $categoryModel->all();
-
-        $firstCategory =  $categoryModel->find(4);
-
-
-
-
-
-
-
         $bookModel = app(Book::class);
-        // return $bookModel->with('category')->first();
-        // $booksResource =  new BookResource($bookModel->with('category')->withTrashed()->paginate('10'));
 
-        $booksResource =  new BookResource($bookModel->with('category')->paginate('1'));
-// return $booksResource;
+        $booksResource =  new BookResource($bookModel->with('category')->paginate('10'));
+
         return view('books.index', ['books' => $booksResource]);
     }
 
@@ -51,10 +37,9 @@ class BookController extends Controller
 
         Cache::forget('category');
 
-        $categoriesResource = Cache::rememberForever('category', (60*5), function () use($categoryModel) {
+        $categoriesResource = Cache::remember('category', (60*5), function () use($categoryModel) {
             return CategoryResource::collection($categoryModel->all());
         });
-// return $categoriesResource;
         return view('books.create', ['categories' => $categoriesResource]);
     }
 
@@ -95,7 +80,6 @@ class BookController extends Controller
             return CategoryResource::collection($categoryModel->all());
         });
         $bookResource =  new BookResource($book);
-// return $bookResource;
         return view('books.edit', compact('bookResource','categoriesResource'));
     }
 
