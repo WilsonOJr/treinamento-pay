@@ -8,7 +8,9 @@ use App\Models\Category;
 use App\Http\Resources\BookResource;
 use App\Http\Resources\CategoryResource;
 use App\Http\Requests\StoreBookRequest;
+use App\Http\Requests\UpdateBookRequest;
 use Illuminate\Support\Facades\Cache;
+use App\Exceptions\Exception;
 
 class BookController extends Controller
 {
@@ -90,9 +92,20 @@ class BookController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateBookRequest $request, $id)
     {
-        //
+        $data = $request->validated();
+
+        $bookModel = app(Book::class);
+
+        $book = $bookModel->find($id)->update($data);
+
+        if($book){
+            return redirect()->route('books.index')->with('success', 'Livro atualizado com sucesso!');
+        }
+        else{
+            return redirect()->route('books.index')->with('warning', 'Erro ao atualizar o Livro!');
+        }
     }
 
     /**
